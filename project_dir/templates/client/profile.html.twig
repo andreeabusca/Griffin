@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profile - {{ client.firstName }}{% endblock %}
+
+{% block body %}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{{ path('app_client') }}">Griffin Bank</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" 
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link {% if app.request.attributes.get('_route') == 'app_client' %}active{% endif %}" 
+             href="{{ path('app_client') }}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if app.request.attributes.get('_route') == 'app_profile' %}active{% endif %}" 
+             href="{{path('app_profile')}}">Profile</a>
+        </li>
+         <li class="nav-item">
+          <a class="nav-link {% if app.request.attributes.get('_route') == 'app_client' %}active{% endif %}" 
+             href="{{ path('app_logout') }}">Logout</a>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="app-body">
+
+    <h2 class="mb-4">Your Profile</h2>
+
+    <div class="card profile-card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">{{ client.firstName }} {{ client.lastName }}</h5>
+            <p class="card-text"><strong>Email:</strong> {{ client.email }}</p>
+            <p class="card-text"><strong>Phone:</strong> {{ client.phone }}</p>
+            <p class="card-text"><strong>Address:</strong> {{ client.address }}</p>
+            <p class="card-text"><strong>Created At:</strong> {{ client.createdAt|date('d/m/Y H:i') }}</p>
+        </div>
+    </div>
+
+    {{ form_start(profileForm) }}
+        <div class="form-group">
+            {{ form_row(profileForm.firstName) }}
+        </div>
+        <div class="form-group">
+            {{ form_row(profileForm.lastName) }}
+        </div>
+        <div class="form-group">
+            {{ form_row(profileForm.email) }}
+        </div>
+        <div class="form-group">
+            {{ form_row(profileForm.phone) }}
+        </div>
+        <div class="form-group">
+            {{ form_row(profileForm.address) }}
+        </div>
+        <div class="form-group">
+            {{ form_row(profileForm.plainPassword) }}
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Update Profile</button>
+    {{ form_end(profileForm) }}
+
+</div>
+{% endblock %}

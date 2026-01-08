@@ -3,6 +3,7 @@
 {% block title %}Log in!{% endblock %}
 
 {% block body %}
+<div class="app-body">
     <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
     <form action="{{path('app_login')}}" method="post">
         {% if error %}
@@ -43,9 +44,10 @@
         </button>
 
         {% if error and error.messageKey=='Invalid credentials.'%}
-            <button class="btn btn-lg btn-primary" type="button" href="{{ path('app_register') }}">
-             Register
-            </button>
+            <p> New to Griffin?  <a href="{{path('app_register')}}">
+                Register
+            </a></p>
         {% endif %}
     </form>
+</div>
 {% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Make Transaction{% endblock %}
+
+{% block body %}
+<div class="app-body">
+<div class="container mt-5">
+    <h2>Make Transaction from Account {{ account.accountType }} (ID: {{ account.id }})</h2>
+    {{ form_start(form) }}
+        {{ form_row(form.receiverAccount) }}
+        {{ form_row(form.amount) }}
+        <button type="submit" class="btn btn-primary mt-3">Submit Transaction</button>
+    {{ form_end(form) }}
+</div>
+ <div class="d-flex justify-content-center mt-3">
+            <a href="{{ path('app_client') }}" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+</div>
+{% endblock %}

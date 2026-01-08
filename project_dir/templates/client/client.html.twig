@@ -1,23 +1,148 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ClientController!{% endblock %}
+{% block title %}Hello {{client.firstName}}!{% endblock %}
 
 {% block body %}
-<button class="btn btn-lg btn-primary" type="submit">
-            <a href="{{ path('app_logout') }}">Logout</a>
-        </button>
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{{ path('app_client') }}">Griffin Bank</a>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/ADINA/Desktop/Griffin/Griffin/project_dir/src/Controller/ClientController.php</code></li>
-        <li>Your template at <code>C:/Users/ADINA/Desktop/Griffin/Griffin/project_dir/templates/client/index.html.twig</code></li>
-    </ul>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" 
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link {% if app.request.attributes.get('_route') == 'app_client' %}active{% endif %}" 
+             href="{{ path('app_client') }}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if app.request.attributes.get('_route') == 'app_profile' %}active{% endif %}" 
+             href="{{path('app_profile')}}">Profile</a>
+        </li>
+         <li class="nav-item">
+          <a class="nav-link {% if app.request.attributes.get('_route') == 'app_client' %}active{% endif %}" 
+             href="{{ path('app_logout') }}">Logout</a>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+<div class="app-body">
+<h1 class="h3 mb-3 font-weight-normal"> Your accounts:</h1>
+<div class="accounts-container">
+
+    {% if accounts is empty %}
+        <div class="card text-center mb-3">
+            <div class="card-body">
+                <h5 class="card-title text-muted">No Accounts Found</h5>
+                <p>You don’t have any accounts yet.</p>
+            </div>
+        </div>
+    {% else %}
+        {% for account in accounts %}
+            <div class="card account-card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title text-primary">Type: {{ account.accountType }}</h5>
+                            <h6 class="card-subtitle text-muted">ID: {{ account.id }}</h6>
+                            <p class="card-text"><strong>Balance:</strong> {{ account.balance|number_format(2, '.', ',') }} {{ account.currency }}</p>
+                            <p class="card-text"><strong>Status:</strong> {{ account.accountStatus }}</p>
+                        </div>
+                        <div>
+                            <form action="{{ path('app_delete_account', {'id': account.id}) }}" method="post" style="display:inline;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete_account_' ~ account.id) }}">
+                                <button type="submit" class="btn btn-danger btn-sm delete-btn">Delete</button>
+                            </form>
+                           
+                            <a href="{{ path('app_make_transaction', { id: account.id }) }}"
+                                class="btn btn-sm btn-info mt-2">
+                                Make Transaction
+                            </a>
+
+                        </div>
+                    </div>
+
+                    <!-- Transactions toggle -->
+                    <button class="btn btn-outline-primary btn-sm mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#tx-{{ account.id }}">
+                        Show Transactions
+                    </button>
+
+                    <div class="collapse mt-2" id="tx-{{ account.id }}">
+    {% set allTx = account.transactions|merge(account.incomingTransactions) %}
+    {% set allTx = allTx|sort((a, b) => b.transactionDate.timestamp <=> a.transactionDate.timestamp) %}
+
+    {% if allTx|length > 0 %}
+        <div class="table-responsive">
+            <table class="table table-hover table-sm mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Sender</th>
+                        <th>Receiver</th>
+                        <th>Reference Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tx in allTx %}
+                        {% set isSender = (tx.senderAccount.id == account.id) %}
+                        {% set isReceiver = (tx.receiverAccount.id == account.id) %}
+                        <tr class="{% if isSender %}table-danger{% elseif isReceiver %}table-success{% endif %}">
+                            <td>{{ tx.transactionDate|date('d/m/Y H:i') }}</td>
+                            <td>{{ isSender ? 'Debit' : (isReceiver ? 'Credit' : 'Other') }}</td>
+                            <td>{{ isSender ? '-' : '+' }}{{ tx.amount|number_format(2, '.', ',') }}</td>
+                            <td>
+                                {{ tx.senderAccount.client.firstName ?? 'N/A' }}
+                                {{ tx.senderAccount.client.lastName ?? '' }}
+                                (ID: {{ tx.senderAccount.id }})
+                            </td>
+                            <td>
+                                {{ tx.receiverAccount.client.firstName ?? 'N/A' }}
+                                {{ tx.receiverAccount.client.lastName ?? '' }}
+                                (ID: {{ tx.receiverAccount.id }})
+                            </td>
+                            <td>{{ tx.referenceNumber }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-muted mb-0">No transactions for this account.</p>
+    {% endif %}
 </div>
+
+
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{{ path('app_create_account') }}" class="btn btn-success btn-lg">Create New Account</a>
+    </div>
+</div>
+
+
+    <script>
+        document.querySelectorAll('form button.btn-danger').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if(!confirm('Are you sure you want to delete this account?')) {
+                    e.preventDefault(); // stop form submission
+                }
+            });
+        });
+    </script>
+</div>
+
+{# <a href="{{ path('app_logout') }}" class="btn btn-danger mt-3">Logout</a> #}
 {% endblock %}
