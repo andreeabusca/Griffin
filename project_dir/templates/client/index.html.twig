@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}View Accounts{% endblock %}
+{% block title %}View Clients{% endblock %}
 
 {% block body %}
 <nav class="navbar navbar-expand-lg navbar-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="{{ path('app_admin') }}">Griffin Bank</a>
+    <a class="navbar-brand" href="{{ path('app_client') }}">Griffin Bank</a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" 
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,32 +32,38 @@
   </div>
 </nav>
 <div class="app-body">
-    <h1>Account</h1>
+    <h1>Clients</h1>
 
     <table class="table center-table">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Details</th>
+                <th>Client Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Accounts</th>
             </tr>
         </thead>
         <tbody>
-        {% for account in accounts %}
+        {% for client in clients %}
             <tr>
-                <td>{{ account.id }}</td>
-                <td>{{ account.accountType }}</td>
-                <td>{{ account.accountStatus}}</td>
+                <td>{{ client.firstName }} {{ client.lastName }}</td>
+                <td>{{ client.email }}</td>
+                <td>{{ client.phone }}</td>
                 <td>
-                <a href="{{ path('app_account_detail', {id: account.id}) }}">
-                    Details
-                </a><br>
+                    {% if client.accounts|length > 0 %}
+                        {% for account in client.accounts %}
+                            <a href="{{ path('app_account_detail', {id: account.id}) }}">
+                                {{ account.accountType }} account ID: {{ account.id }}
+                            </a><br>
+                        {% endfor %}
+                    {% else %}
+                        No accounts
+                    {% endif %}
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="4">No accounts found</td>
+                <td colspan="4">No clients found</td>
             </tr>
         {% endfor %}
         </tbody>

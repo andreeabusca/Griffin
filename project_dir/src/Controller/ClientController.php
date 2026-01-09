@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Controller;
-
+use App\Entity\Client;
 use App\Form\ClientFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,4 +43,25 @@ final class ClientController extends AbstractController
             'profileForm' => $form,
         ]);
     }
+
+    #[Route('/admin', name: 'app_admin')]
+    #[IsGranted('ROLE_ADMIN')]
+    public function admin_dashboard()
+    {
+        $admin= $this->getUser();
+        return $this->render('client/admin.html.twig', [
+            'admin' => $admin,
+        ]);
+    }
+
+    #[Route('/clients', name: 'app_clients')]
+    #[IsGranted('ROLE_ADMIN')]
+    public function view_clients(EntityManagerInterface $em):Response
+    {
+        $clients= $em->getRepository(Client::class)->findAll();
+        return $this->render('client/index.html.twig', [
+            'clients' => $clients,
+        ]);
+    }
+
 }

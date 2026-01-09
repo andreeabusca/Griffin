@@ -1,0 +1,115 @@
+{% extends 'base.html.twig' %}
+{% block title %}Account {{account.id}} {% endblock %}
+
+{% block body %}
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{{ path('app_admin') }}">Griffin Bank</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" 
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link {% if app.request.attributes.get('_route') == 'app_client' %}active{% endif %}" 
+             href="{{ path('app_admin') }}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if app.request.attributes.get('_route') == 'app_profile' %}active{% endif %}" 
+             href="{{path('app_profile')}}">Profile</a>
+        </li>
+         <li class="nav-item">
+          <a class="nav-link {% if app.request.attributes.get('_route') == 'app_client' %}active{% endif %}" 
+             href="{{ path('app_logout') }}">Logout</a>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="app-body">
+
+    <div class="card account-card mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="card-title text-primary">Type: {{ account.accountType }}</h5>
+                    <h6 class="card-subtitle text-muted">ID: {{ account.id }}</h6>
+                    <p class="card-text"><strong>Balance:</strong> {{ account.balance|number_format(2, '.', ',') }} {{ account.currency }}</p>
+                    <p class="card-text"><strong>Status:</strong> {{ account.accountStatus }}</p>
+                </div>
+                <div>
+                   {% if account.accountStatus == 'Active' %}
+                        <a href="{{ path('app_account_change_status', {'id': account.id}) }}" class="btn btn-warning btn-sm">Deactivate</a>
+                    {% else %}
+                        <a href="{{ path('app_account_change_status', {'id': account.id}) }}" class="btn btn-success btn-sm">Activate</a>
+                    {% endif %}
+
+                </div>
+                
+            </div>
+
+            <!-- Transactions toggle -->
+            <button class="btn btn-outline-primary btn-sm mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#tx-{{ account.id }}">
+                Show Transactions
+            </button>
+
+            <div class="collapse mt-2" id="tx-{{ account.id }}">
+                {% set allTx = account.transactions|merge(account.incomingTransactions) %}
+                {% set allTx = allTx|sort((a, b) => b.transactionDate.timestamp <=> a.transactionDate.timestamp) %}
+
+                {% if allTx|length > 0 %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Sender</th>
+                                    <th>Receiver</th>
+                                    <th>Reference Number</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for tx in allTx %}
+                                    {% set isSender = (tx.senderAccount.id == account.id) %}
+                                    {% set isReceiver = (tx.receiverAccount.id == account.id) %}
+                                    <tr class="{% if isSender %}table-danger{% elseif isReceiver %}table-success{% endif %}">
+                                        <td>{{ tx.transactionDate|date('d/m/Y H:i') }}</td>
+                                        <td>{{ isSender ? 'Debit' : (isReceiver ? 'Credit' : 'Other') }}</td>
+                                        <td>{{ isSender ? '-' : '+' }}{{ tx.amount|number_format(2, '.', ',') }}</td>
+                                        <td>
+                                            {{ tx.senderAccount.client.firstName ?? 'N/A' }}
+                                            {{ tx.senderAccount.client.lastName ?? '' }}
+                                            (ID: {{ tx.senderAccount.id }})
+                                        </td>
+                                        <td>
+                                            {{ tx.receiverAccount.client.firstName ?? 'N/A' }}
+                                            {{ tx.receiverAccount.client.lastName ?? '' }}
+                                            (ID: {{ tx.receiverAccount.id }})
+                                        </td>
+                                        <td>{{ tx.referenceNumber }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">No transactions for this account.</p>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+<a href="{{ path('app_clients') }}" class="btn btn-secondary mt-3">Back to Clients</a>
+<a href="{{ path('app_accounts') }}" class="btn btn-secondary mt-3">Back to Accounts</a>
+<a href="{{ path('app_transactions') }}" class="btn btn-secondary mt-3">Back to Transactions</a>
+</div>
+
+{% endblock %}

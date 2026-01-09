@@ -68,4 +68,39 @@ final class AccountController extends AbstractController
 
         return $this->redirectToRoute('app_client');
     }
+
+    #[Route('/account/{id}', name: 'app_account_detail')]
+    #[IsGranted('ROLE_ADMIN')]
+    public function account_detail(Account $account): Response
+    {
+        return $this->render('account/account_detail.html.twig', [
+            'account' => $account,
+        ]);
+    }
+
+    #[Route('/accounts', name: 'app_accounts')]
+    #[IsGranted('ROLE_ADMIN')]
+    public function view_clients(EntityManagerInterface $em):Response
+    {
+        $accounts= $em->getRepository(Account::class)->findAll();
+        return $this->render('account/index.html.twig', [
+            'accounts' => $accounts,
+        ]);
+    }
+
+    #[Route('/account_change_stats/{id}', name: 'app_account_change_status')]
+    #[IsGranted('ROLE_ADMIN')]
+    public function change_status(EntityManagerInterface $em, Account $account):Response
+    {
+
+        $status = $account->getAccountStatus() === 'Active' ? 'Inactive' : 'Active';
+        $account->setAccountStatus($status);
+        $em->flush();
+
+
+       return $this->redirectToRoute('app_account_detail', [
+        'id' => $account->getId(),
+       ]);
+    }
+
 }

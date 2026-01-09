@@ -23,19 +23,19 @@ class RegistrationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var string $plainPassword */
             $plainPassword = $form->get('plainPassword')->getData();
-            $user->setRoles(['ROLE_USER']); // Default role for a new customer
-            $user->setIsActive(true); // Account is active upon registration
-            $user->setCreatedAt(new \DateTimeImmutable()); // Set audit timestamp
-            $user->setUpdatedAt(new \DateTimeImmutable()); // Set initial update timestamp
+            $user->setRoles(['ROLE_USER']); 
+            $user->setIsActive(true); 
+            $user->setCreatedAt(new \DateTimeImmutable()); 
+            $user->setUpdatedAt(new \DateTimeImmutable()); 
 
 
-            // encode the plain password
+    
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // do anything else you need here, like send an email
+            
 
             return $this->redirectToRoute('app_login');
         }

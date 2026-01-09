@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}View Accounts{% endblock %}
+{% block title %}Welcome {{admin.firstName}}! {% endblock %}
 
 {% block body %}
 <nav class="navbar navbar-expand-lg navbar-dark">
@@ -31,36 +31,30 @@
     </div>
   </div>
 </nav>
-<div class="app-body">
-    <h1>Account</h1>
 
-    <table class="table center-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Details</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for account in accounts %}
-            <tr>
-                <td>{{ account.id }}</td>
-                <td>{{ account.accountType }}</td>
-                <td>{{ account.accountStatus}}</td>
-                <td>
-                <a href="{{ path('app_account_detail', {id: account.id}) }}">
-                    Details
-                </a><br>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="4">No accounts found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+<div class="app-body">
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Actions</th>
+     
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a href="{{ path('app_clients') }}">View Clients</td>
+    </tr>
+    <tr>
+    <td><a href="{{ path('app_accounts') }}">View Accounts</td>
+    </tr>
+    <tr>
+     <td><a href="{{path('app_transactions')}}">View Transactions</td>
+    </tr>
+    </tr>
+  </tbody>
+</table>
+
+
 </div>
 {% endblock %}

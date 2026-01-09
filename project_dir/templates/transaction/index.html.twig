@@ -1,20 +1,72 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello TransactionController!{% endblock %}
+{% block title %}View Transactions{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{{ path('app_admin') }}">Griffin Bank</a>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" 
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/ADINA/Desktop/Griffin/Griffin/project_dir/src/Controller/TransactionController.php</code></li>
-        <li>Your template at <code>C:/Users/ADINA/Desktop/Griffin/Griffin/project_dir/templates/transaction/index.html.twig</code></li>
-    </ul>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link {% if app.request.attributes.get('_route') == 'app_client' %}active{% endif %}" 
+             href="{{ path('app_admin') }}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if app.request.attributes.get('_route') == 'app_profile' %}active{% endif %}" 
+             href="{{path('app_profile')}}">Profile</a>
+        </li>
+         <li class="nav-item">
+          <a class="nav-link {% if app.request.attributes.get('_route') == 'app_client' %}active{% endif %}" 
+             href="{{ path('app_logout') }}">Logout</a>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="app-body">
+    <h1>Transaction</h1>
+
+    <table class="table center-table">
+        <thead>
+            <tr>
+                <th>Reference Number</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Sender Account</th>
+                <th>Receiver Account</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for transaction in transactions %}
+            <tr>
+                <td>{{ transaction.referenceNumber }}</td>
+                <td>{{ transaction.transactionDate|date('d/m/Y H:i') }}</td>
+                <td>{{ transaction.amount}}</td>
+                <td>
+                <a href="{{ path('app_account_detail', {id: transaction.senderAccount.id}) }}">
+                    {{transaction.senderAccount.id}}
+                </a><br>
+                </td>
+                 <td>
+                <a href="{{ path('app_account_detail', {id: transaction.receiverAccount.id}) }}">
+                    {{transaction.receiverAccount.id}}
+                </a><br>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">No transactions found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}

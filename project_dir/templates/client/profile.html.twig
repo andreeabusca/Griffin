@@ -4,7 +4,7 @@
 
 {% block body %}
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<nav class="navbar navbar-expand-lg navbar-dark">
   <div class="container-fluid">
     <a class="navbar-brand" href="{{ path('app_client') }}">Griffin Bank</a>
 
@@ -16,8 +16,13 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link {% if app.request.attributes.get('_route') == 'app_client' %}active{% endif %}" 
-             href="{{ path('app_client') }}">Home</a>
+          {% if is_granted('ROLE_ADMIN') %}
+              <a class="nav-link {% if app.request.attributes.get('_route') == 'app_client' %}active{% endif %}" 
+               href="{{ path('app_admin') }}">Home</a>
+          {% else %}
+              <a class="nav-link {% if app.request.attributes.get('_route') == 'app_client' %}active{% endif %}" 
+              href="{{ path('app_client') }}">Home</a>
+          {% endif %}
         </li>
         <li class="nav-item">
           <a class="nav-link {% if app.request.attributes.get('_route') == 'app_profile' %}active{% endif %}" 
@@ -44,6 +49,7 @@
             <p class="card-text"><strong>Phone:</strong> {{ client.phone }}</p>
             <p class="card-text"><strong>Address:</strong> {{ client.address }}</p>
             <p class="card-text"><strong>Created At:</strong> {{ client.createdAt|date('d/m/Y H:i') }}</p>
+
         </div>
     </div>
 

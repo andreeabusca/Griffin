@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class TransactionController extends AbstractController
 {
@@ -53,6 +54,13 @@ final class TransactionController extends AbstractController
 
         $sender = $transaction->getSenderAccount();
         $receiver = $transaction->getReceiverAccount();
+
+         if ($sender->getAccountStatus() !== 'Active' || $receiver->getAccountStatus() !== 'Active') {
+            $this->addFlash('error', 'Transaction cannot be performed: one or both accounts are inactive.');
+            return $this->redirectToRoute('app_client');
+        }
+
+
         $amount = $transaction->getAmount();
         
         $sender->setBalance($sender->getBalance() - $amount);
@@ -70,5 +78,15 @@ final class TransactionController extends AbstractController
         'form' => $form,
         'account' => $account
     ]);
+    }
+
+    #[Route('/transactions', name: 'app_transactions')]
+    #[IsGranted('ROLE_ADMIN')]
+    public function view_transactions(EntityManagerInterface $em):Response
+    {
+        $transactions= $em->getRepository(Transaction::class)->findBy([],['transactionDate' => 'DESC']);
+        return $this->render('transaction/index.html.twig', [
+            'transactions' => $transactions,
+        ]);
     }
 }
