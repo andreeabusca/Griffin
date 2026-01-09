@@ -1,5 +1,6 @@
 # Griffin
 A Banking Web Application 
+---
 **Technologies**: PHP, Simfony Framework, Composer, Twig, PostgreSQL, HTML, CSS
 ---
 ##User Features
