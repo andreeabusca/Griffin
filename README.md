@@ -4,6 +4,7 @@ A Banking Web Application
 **Technologies**: PHP, Simfony Framework, Composer, Twig, PostgreSQL, HTML, CSS
 ---
 ##User Features
+---
 ###Registration & Login:
 Users can register new accounts and log in securely. 
 ###Profile and Account Management:
@@ -14,15 +15,22 @@ Users can transfer virtual funds between accounts. Each transaction updates send
 Each user can view a list of their past transactions with details such as date, counterpart, and amount.
 ---
 ##Administrative Features 
+---
 ###Admin Dashboard:
 Admins can view all registered users, monitor balances, review system-wide transactions, and manage user accounts (activation, suspension).
 ---
 ##Usage instructions:
+
 ##Client:
+
 -user tries to log in;
+
 -if user is already in the database, the user login is successful;
+
 -if user does not exit in the database, the user must register;
+
 -user can view profile, create or delete accounts, and make transactions;
+
 -user logs out.
 
 ##Admin:
