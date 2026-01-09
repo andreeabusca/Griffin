@@ -48,6 +48,7 @@ Admins can view all registered users, monitor balances, review system-wide trans
 
 -user logs out.
 
+---
 ##Before installation of the project, you must already have installed:
 -an IDE: PHPStorm (one month free trial), Visual Studio Code (free) to work on the code;
 
@@ -71,7 +72,7 @@ Admins can view all registered users, monitor balances, review system-wide trans
 
 -Symfony for VSCode 
 
-
+---
 ##Installation of the project:
 -clone git repo: git clone <repo_url>
 
